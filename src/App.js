@@ -19,7 +19,7 @@ function App() {
 		console.info(tracks.map(track=>track['shape']), canvas['canvas'])
 		}
 		return ()=>{}
-	  }, [gosRef.current]);
+	  }, [gosRef.current, key]);
 
 	return (
 		<div className="App">
