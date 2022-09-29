@@ -59,7 +59,7 @@ let output = process.argv[3];
 
 if (!input || !output) {
     console.error(
-        "Usage: node gosling-screenshot.js <input.json> <output.{png,jpeg,webp}>",
+        "Usage: node gosling-boxes.js <input.json> <output.json>",
     );
     process.exit(1);
 }
