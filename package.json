@@ -2,6 +2,7 @@
   "name": "gosling-boxes",
   "version": "0.1.0",
   "homepage": "",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
@@ -13,6 +14,7 @@
     "higlass": "^1.11.11",
     "nanoevents": "^7.0.1",
     "pixi.js": "6.0.4",
+    "puppeteer": "^18.0.5",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-scripts": "4.0.2",
