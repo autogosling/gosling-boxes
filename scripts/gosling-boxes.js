@@ -38,7 +38,7 @@ function html(spec, {
  * @param {string} apiName
  * @returns {Promise<Buffer>}
  */
-async function callAPI(spec, output) {
+async function callAPI(spec, output, output_spec) {
     let browser = await puppeteer.launch({
         headless: true,
         args: ["--use-gl=swiftshader"], // more consistent rendering of transparent elements
@@ -47,17 +47,21 @@ async function callAPI(spec, output) {
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     await page.waitForSelector(".gosling-component");
-
+    let hg_wrapper = await page.$(".higlass-wrapper");
+    await hg_wrapper.screenshot({path: "test.jpeg", type: "jpeg",quality:100, omitBackground:false});
     let trackInfos = await page.evaluate(() => tracks)
+    console.log(trackInfos)
+    fs.writeFile(output_spec, JSON.stringify(trackInfos))
     fs.writeFile(output, JSON.stringify(trackInfos.map(d => d['shape'])))
-
+    //await page.screenshot({path: "test.png", type: "png", fullPage:true});
     await browser.close();
 }
 
 let input = process.argv[2];
 let output = process.argv[3];
+let output_spec = process.argv[4];
 
-if (!input || !output) {
+if (!input || !output|| !output_spec) {
     console.error(
         "Usage: node gosling-boxes.js <input.json> <output.json>",
     );
@@ -65,4 +69,4 @@ if (!input || !output) {
 }
 
 let spec = await fs.readFile(input, "utf8");
-await callAPI(spec, output);
+await callAPI(spec, output, output_spec);

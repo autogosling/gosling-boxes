@@ -15,8 +15,8 @@
     "nanoevents": "^7.0.1",
     "pixi.js": "6.0.4",
     "puppeteer": "^18.0.5",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-scripts": "4.0.2",
     "web-vitals": "^1.0.1"
   },
