@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import * as fs from "node:fs/promises";
 
+
 /**
  * @param {string} spec
  * @param {{ reactVersion: string, pixijsVersion: string, higlassVersion: string, goslingVersion: string }} pkgOptions
@@ -27,9 +28,24 @@ function html(spec, {
 	<script>
 		let api = gosling.embed(document.getElementById("vis"), JSON.parse(\`${spec}\`))
 		window.tracks = api.then(a=>a.getTracks())
+        window.canvas = api.then(a=>a.getCanvas())
+        
 	</script>
 </body>
 </html>`;
+}
+
+function blobCallback(){
+    return b=>{
+        const r = new FileReader();
+        r.onloadend = () => {
+            Cu.import('resource://gre/modules/osfile.jsm');
+            const writePath = "test_canvas.png";
+            const promise = OS.File.writeAtomic(writePath, new Uint8Array(r.result),
+                                      {tmpPath:`${writePath}.tmp`});
+        };
+        r.readAsArrayBuffer(b);
+    };
 }
 
 
@@ -38,7 +54,9 @@ function html(spec, {
  * @param {string} apiName
  * @returns {Promise<Buffer>}
  */
-async function callAPI(spec, output, output_spec) {
+async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
+    fs.writeFile(output_spec, spec);
+
     let browser = await puppeteer.launch({
         headless: true,
         args: ["--use-gl=swiftshader"], // more consistent rendering of transparent elements
@@ -47,19 +65,31 @@ async function callAPI(spec, output, output_spec) {
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     await page.waitForSelector(".gosling-component");
-    let hg_wrapper = await page.$(".higlass-wrapper");
-    await hg_wrapper.screenshot({path: "test.jpeg", type: "jpeg",quality:100, omitBackground:false});
+
+    let canvas_elem = await page.$("canvas")
+    await canvas_elem.screenshot({path: screenshot_path, type:"png"});
+
+    let canvas = await page.evaluate(()=> canvas);
+    console.log(canvas);
+    
+    const dataUrl = await page.evaluate(async () => {
+     return document.getElementsByTagName("canvas")[0].toDataURL();
+    })
+    const data = Buffer.from(dataUrl.split(',').pop(),"base64");
+    fs.writeFile(img_path, data);
+
     let trackInfos = await page.evaluate(() => tracks)
-    console.log(trackInfos)
-    fs.writeFile(output_spec, JSON.stringify(trackInfos))
-    fs.writeFile(output, JSON.stringify(trackInfos.map(d => d['shape'])))
-    //await page.screenshot({path: "test.png", type: "png", fullPage:true});
+    fs.writeFile(output, JSON.stringify(trackInfos.map(d => d['shape'])));
+
     await browser.close();
 }
 
 let input = process.argv[2];
-let output = process.argv[3];
-let output_spec = process.argv[4];
+let name = input.split(".")[0]
+let output = name+".json";
+let output_spec = name+".json";
+let img_output = name+".png";
+let screenshot_output = name+".png"
 
 if (!input || !output|| !output_spec) {
     console.error(
@@ -68,5 +98,11 @@ if (!input || !output|| !output_spec) {
     process.exit(1);
 }
 
+
+const OUTPUT_DIR = "../data/extracted/bounding_box/"
+const IMG_DIR = "../data/extracted/images/"
+const SPEC_DIR = "../data/extracted/specs/"
+const SCNS_DIR = "../data/extracted/screenshot/"
+
 let spec = await fs.readFile(input, "utf8");
-await callAPI(spec, output, output_spec);
+await callAPI(spec, OUTPUT_DIR+output, SPEC_DIR+output_spec, IMG_DIR+img_output, SCNS_DIR+screenshot_output);
