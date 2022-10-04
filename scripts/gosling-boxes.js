@@ -35,14 +35,14 @@ function html(spec, {
 </html>`;
 }
 
-function blobCallback(){
-    return b=>{
+function blobCallback() {
+    return b => {
         const r = new FileReader();
         r.onloadend = () => {
             Cu.import('resource://gre/modules/osfile.jsm');
             const writePath = "test_canvas.png";
             const promise = OS.File.writeAtomic(writePath, new Uint8Array(r.result),
-                                      {tmpPath:`${writePath}.tmp`});
+                { tmpPath: `${writePath}.tmp` });
         };
         r.readAsArrayBuffer(b);
     };
@@ -64,18 +64,18 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
 
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
-    await page.waitForSelector(".gosling-component");
+    let component = await page.waitForSelector(".gosling-component");
 
-    let canvas_elem = await page.$("canvas")
-    await canvas_elem.screenshot({path: screenshot_path, type:"png"});
+    // let canvas_elem = await page.$("canvas")
+    await component.screenshot({ path: screenshot_path });
 
-    let canvas = await page.evaluate(()=> canvas);
+    let canvas = await page.evaluate(() => canvas);
     console.log(canvas);
-    
+
     const dataUrl = await page.evaluate(async () => {
-     return document.getElementsByTagName("canvas")[0].toDataURL();
+        return document.getElementsByTagName("canvas")[0].toDataURL();
     })
-    const data = Buffer.from(dataUrl.split(',').pop(),"base64");
+    const data = Buffer.from(dataUrl.split(',').pop(), "base64");
     fs.writeFile(img_path, data);
 
     let trackInfos = await page.evaluate(() => tracks)
@@ -86,12 +86,12 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
 
 let input = process.argv[2];
 let name = input.split(".")[0]
-let output = name+".json";
-let output_spec = name+".json";
-let img_output = name+".png";
-let screenshot_output = name+".png"
+let output = name + ".json";
+let output_spec = name + ".json";
+let img_output = name + ".png";
+let screenshot_output = name + ".png"
 
-if (!input || !output|| !output_spec) {
+if (!input || !output || !output_spec) {
     console.error(
         "Usage: node gosling-boxes.js <input.json> <output.json>",
     );
@@ -105,4 +105,4 @@ const SPEC_DIR = "../data/extracted/specs/"
 const SCNS_DIR = "../data/extracted/screenshot/"
 
 let spec = await fs.readFile(input, "utf8");
-await callAPI(spec, OUTPUT_DIR+output, SPEC_DIR+output_spec, IMG_DIR+img_output, SCNS_DIR+screenshot_output);
+await callAPI(spec, OUTPUT_DIR + output, SPEC_DIR + output_spec, IMG_DIR + img_output, SCNS_DIR + screenshot_output);
