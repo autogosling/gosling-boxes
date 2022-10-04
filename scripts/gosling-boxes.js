@@ -59,7 +59,7 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
 
     let browser = await puppeteer.launch({
         headless: true,
-        args: ["--use-gl=swiftshader"], // more consistent rendering of transparent elements
+        args: ["--use-gl=angle"], // more consistent rendering of transparent elements
     });
 
     let page = await browser.newPage();
