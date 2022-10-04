@@ -49,6 +49,7 @@ function blobCallback(){
 }
 
 
+
 /**
  * @param {string} spec
  * @param {string} apiName
@@ -64,15 +65,17 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
 
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
-    await page.waitForSelector(".gosling-component");
+    let comp = await page.waitForSelector(".gosling-component");
+    await comp.screenshot({path:"test.png"})
 
     let canvas_elem = await page.$("canvas")
-    await canvas_elem.screenshot({path: screenshot_path, type:"png"});
+    await canvas_elem.screenshot({path: screenshot_path, type:"jpeg", omitBackground:true});
 
     let canvas = await page.evaluate(()=> canvas);
     console.log(canvas);
     
     const dataUrl = await page.evaluate(async () => {
+    
      return document.getElementsByTagName("canvas")[0].toDataURL();
     })
     const data = Buffer.from(dataUrl.split(',').pop(),"base64");
@@ -89,7 +92,7 @@ let name = input.split(".")[0]
 let output = name+".json";
 let output_spec = name+".json";
 let img_output = name+".png";
-let screenshot_output = name+".png"
+let screenshot_output = name+".jpeg"
 
 if (!input || !output|| !output_spec) {
     console.error(
