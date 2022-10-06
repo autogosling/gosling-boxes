@@ -1,3 +1,4 @@
+from traceback import print_tb
 from PIL import Image, ImageDraw
 import json
 
@@ -19,6 +20,7 @@ def load_boxes(box_file):
 
 def draw_boxes(img_file, box_file, output_file):
     box_data = load_boxes(box_file)
+    print(box_data)
     with Image.open(img_file) as im:
         draw = ImageDraw.Draw(im)
         for box in box_data:
@@ -28,4 +30,4 @@ def draw_boxes(img_file, box_file, output_file):
         im.save(output_file,"PNG")            
 
 
-#draw_boxes(IMG_DIR+"example.jpeg", BOX_DIR+"example.json", "test_box.png")
+draw_boxes(IMG_DIR+"example.jpeg", BOX_DIR+"example.json", "test_box.png")

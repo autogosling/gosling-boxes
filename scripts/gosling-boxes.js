@@ -1,5 +1,7 @@
 import puppeteer from "puppeteer";
 import * as fs from "node:fs/promises";
+import path from "node:path";
+//const path = require('node:path')
 
 
 /**
@@ -60,16 +62,16 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
 
     let browser = await puppeteer.launch({
         headless: true,
-        args: ["--use-gl=swiftshader"], // more consistent rendering of transparent elements
+        args: ["--use-gl=angle"], // more consistent rendering of transparent elements
     });
 
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     let comp = await page.waitForSelector(".gosling-component");
-    await comp.screenshot({path:"test.png"})
+    // await comp.screenshot({path:"test.png"})
 
     let canvas_elem = await page.$("canvas")
-    await canvas_elem.screenshot({path: screenshot_path, type:"jpeg", omitBackground:true});
+    await canvas_elem.screenshot({path: screenshot_path, type:"png", omitBackground:true});
 
     let canvas = await page.evaluate(()=> canvas);
     console.log(canvas);
@@ -87,19 +89,37 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
     await browser.close();
 }
 
-let input = process.argv[2];
-let name = input.split(".")[0]
-let output = name+".json";
-let output_spec = name+".json";
-let img_output = name+".png";
-let screenshot_output = name+".jpeg"
 
-if (!input || !output|| !output_spec) {
+
+async function runExamplePath(fp){
+    let name = path.parse(fp).name;
+    let output = name+".json";
+    let output_spec = name+".json";
+    let img_output = name+".png";
+    let screenshot_output = name+".png";
+    let spec = await fs.readFile(fp, "utf8");
+    await callAPI(spec, OUTPUT_DIR+output, SPEC_DIR+output_spec, IMG_DIR+img_output, SCNS_DIR+screenshot_output);
+}
+
+let input = process.argv[2];
+
+if (!input ) {
     console.error(
         "Usage: node gosling-boxes.js <input.json> <output.json>",
     );
     process.exit(1);
 }
+
+const stat = await fs.lstat(input)
+if (stat.isFile()){
+    runExamplePath(input);
+} else {
+    var files = await(fs.readdir(input))
+    console.log(files);
+    files.forEach(s => runExamplePath(path.join(input,s)));
+}
+
+
 
 
 const OUTPUT_DIR = "../data/extracted/bounding_box/"
@@ -107,5 +127,4 @@ const IMG_DIR = "../data/extracted/images/"
 const SPEC_DIR = "../data/extracted/specs/"
 const SCNS_DIR = "../data/extracted/screenshot/"
 
-let spec = await fs.readFile(input, "utf8");
-await callAPI(spec, OUTPUT_DIR+output, SPEC_DIR+output_spec, IMG_DIR+img_output, SCNS_DIR+screenshot_output);
+
