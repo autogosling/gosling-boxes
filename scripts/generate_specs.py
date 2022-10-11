@@ -109,7 +109,8 @@ test_views["views"] = [
 
 test_name = "sim_layout"
 test_path = "generated_specs"
-sample_spec = read_spec("train_specs/example_sim_layout.json")
+spec_path = "train_specs/example_sim_layout.json"
+sample_spec = read_spec(spec_path)
 perm_vs = permute_views(sample_spec)
 # print(perm_vs)
 # print(len(perm_vs))
