@@ -1,7 +1,6 @@
 import puppeteer from "puppeteer";
 import * as fs from "node:fs/promises";
 import path from "node:path";
-//const path = require('node:path')
 
 
 /**
@@ -37,19 +36,6 @@ function html(spec, {
 </html>`;
 }
 
-function blobCallback(){
-    return b=>{
-        const r = new FileReader();
-        r.onloadend = () => {
-            Cu.import('resource://gre/modules/osfile.jsm');
-            const writePath = "test_canvas.png";
-            const promise = OS.File.writeAtomic(writePath, new Uint8Array(r.result),
-                                      {tmpPath:`${writePath}.tmp`});
-        };
-        r.readAsArrayBuffer(b);
-    };
-}
-
 
 
 /**
@@ -57,8 +43,7 @@ function blobCallback(){
  * @param {string} apiName
  * @returns {Promise<Buffer>}
  */
-async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
-    fs.writeFile(output_spec, spec);
+async function callAPI(spec, output, output_spec, screenshot_path) {
 
     let browser = await puppeteer.launch({
         headless: true,
@@ -71,39 +56,32 @@ async function callAPI(spec, output, output_spec, img_path, screenshot_path) {
     // await comp.screenshot({path:"test.png"})
 
     let canvas_elem = await page.$("canvas")
-    await canvas_elem.screenshot({path: screenshot_path, type:"png", omitBackground:true});
-
-    let canvas = await page.evaluate(()=> canvas);
-    console.log(canvas);
-    
-    const dataUrl = await page.evaluate(async () => {
-    
-     return document.getElementsByTagName("canvas")[0].toDataURL();
-    })
-    const data = Buffer.from(dataUrl.split(',').pop(),"base64");
-    fs.writeFile(img_path, data);
+    await canvas_elem.screenshot({ path: screenshot_path, type: "png", omitBackground: true });
 
     let trackInfos = await page.evaluate(() => tracks)
     fs.writeFile(output, JSON.stringify(trackInfos.map(d => d['shape'])));
+    fs.writeFile(output_spec, JSON.stringify(trackInfos.map(d => d['spec'])));
 
     await browser.close();
 }
 
 
+const OUTPUT_DIR = "../data/extracted/bounding_box/"
+const SPEC_DIR = "../data/extracted/specs/"
+const SCNS_DIR = "../data/extracted/screenshot/"
 
-async function runExamplePath(fp){
+async function runExamplePath(fp) {
     let name = path.parse(fp).name;
-    let output = name+".json";
-    let output_spec = name+".json";
-    let img_output = name+".png";
-    let screenshot_output = name+".png";
+    let output = name + ".json";
+    let output_spec = name + ".json";
+    let screenshot_output = name + ".png";
     let spec = await fs.readFile(fp, "utf8");
-    await callAPI(spec, OUTPUT_DIR+output, SPEC_DIR+output_spec, IMG_DIR+img_output, SCNS_DIR+screenshot_output);
+    await callAPI(spec, OUTPUT_DIR + output, SPEC_DIR + output_spec, SCNS_DIR + screenshot_output);
 }
 
 let input = process.argv[2];
 
-if (!input ) {
+if (!input) {
     console.error(
         "Usage: node gosling-boxes.js <input.json> <output.json>",
     );
@@ -111,20 +89,10 @@ if (!input ) {
 }
 
 const stat = await fs.lstat(input)
-if (stat.isFile()){
+if (stat.isFile()) {
     runExamplePath(input);
 } else {
-    var files = await(fs.readdir(input))
+    var files = await (fs.readdir(input))
     console.log(files);
-    files.forEach(s => runExamplePath(path.join(input,s)));
+    files.forEach(s => runExamplePath(path.join(input, s)));
 }
-
-
-
-
-const OUTPUT_DIR = "../data/extracted/bounding_box/"
-const IMG_DIR = "../data/extracted/images/"
-const SPEC_DIR = "../data/extracted/specs/"
-const SCNS_DIR = "../data/extracted/screenshot/"
-
-
