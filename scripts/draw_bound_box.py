@@ -4,6 +4,8 @@ from PIL import Image, ImageDraw
 import json
 import math
 import numpy as np
+import sys
+import os
 
 IMG_DIR = "../data/extracted/screenshot/"
 BOX_DIR = "../data/extracted/bounding_box/"
@@ -41,6 +43,9 @@ def draw_circular(dr,box,width=3):
     edge_end_outer_y = box["cy"] + box["outerRadius"]*np.sin(np.deg2rad(adjust_angle(box["endAngle"])))
     dr.line([edge_end_inner_x,edge_end_inner_y,edge_end_outer_x,edge_end_outer_y], fill="red", width=width)
 
+def draw_circular_box(dr,box,width=3):
+    box_info = [box["cx"]-box["outerRadius"],box["cy"]-box["outerRadius"],box["cx"]+box["outerRadius"],box["cy"]+box["outerRadius"]]
+    dr.rectangle(box_info, outline="red", width=width)
 
 def draw_track_boxes(img_file, box_file, output_file):
     box_data = load_boxes(box_file)
@@ -51,10 +56,17 @@ def draw_track_boxes(img_file, box_file, output_file):
             if box.keys() == BOX_KEYS:
                 draw_rect(draw, box)
             elif box.keys() == CIR_KEYS:
-                draw_circular(draw,box)
+                draw_circular_box(draw,box)
 
 
         im.save(output_file,"PNG")            
 
 
-#draw_track_boxes(IMG_DIR+"example_sim_layout.png", BOX_DIR+"example_sim_layout.json", "test_box.png")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: python draw_bound_box.py <input_file> <output_file>")
+    else:
+        name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+        output_file = sys.argv[2]
+        draw_track_boxes(IMG_DIR+name+".png", BOX_DIR+name+".json", output_file)
