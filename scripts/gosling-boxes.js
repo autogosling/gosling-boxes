@@ -1,6 +1,10 @@
 import puppeteer from "puppeteer";
 import * as fs from "node:fs/promises";
 import path from "node:path";
+import EventEmitter from "node:events";
+
+const emitter = new EventEmitter()
+emitter.setMaxListeners(100)
 
 
 /**
@@ -94,5 +98,7 @@ if (stat.isFile()) {
 } else {
     var files = await (fs.readdir(input))
     console.log(files);
-    files.forEach(s => runExamplePath(path.join(input, s)));
+    for (const f of files){
+        await runExamplePath(path.join(input, f));
+    }
 }
