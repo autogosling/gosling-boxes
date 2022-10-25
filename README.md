@@ -30,7 +30,9 @@ In the scripts folder, run
 `python clear_data_dir.py`
 
 ### how to generate new specs (in development)
-Go to the scripts/generate_specs.py file and change the spec_path.
+Go to scripts folder and run
+`python generate_specs.py <template_spec_file_path> -h`. to see usage and available flags. 
+
 
 ### how to draw bounding boxes (in development)
-Go to the scripts/draw_bound_box.py file and use draw_track_boxes method.
+Go to the scripts folder and run `python draw_bound_box.py <input_file> <output_file>`.
