@@ -83,7 +83,7 @@ async function runExamplePath(fp) {
     let output_spec = name + ".json";
     let screenshot_output = name + ".png";
     let mark_output = name +".json";
-    let layout_output = name+"json";
+    let layout_output = name+".json";
     const output_dir = {
         "tracks": OUTPUT_DIR+output,
         "specs":SPEC_DIR+output_spec,
