@@ -47,7 +47,7 @@ function html(spec, {
  * @param {string} apiName
  * @returns {Promise<Buffer>}
  */
-async function callAPI(spec, output, output_spec, screenshot_path) {
+async function callAPI(spec, output_dir) {
 
     let browser = await puppeteer.launch({
         headless: true,
@@ -57,15 +57,16 @@ async function callAPI(spec, output, output_spec, screenshot_path) {
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     let comp = await page.waitForSelector(".gosling-component");
-    // await comp.screenshot({path:"test.png"})
 
     let canvas_elem = await page.$("canvas")
-    await canvas_elem.screenshot({ path: screenshot_path, type: "png", omitBackground: true });
+    await canvas_elem.screenshot({ path: output_dir["screenshots"], type: "png", omitBackground: true });
 
     let trackInfos = await page.evaluate(() => tracks)
-    fs.writeFile(output, JSON.stringify(trackInfos.map(d => d['shape'])));
-    fs.writeFile(output_spec, JSON.stringify(trackInfos.map(d => d['spec'])));
-
+    console.log(trackInfos)
+    fs.writeFile(output_dir["tracks"], JSON.stringify(trackInfos.map(d => d['shape'])));
+    fs.writeFile(output_dir["specs"], JSON.stringify(trackInfos.map(d => d['spec'])));
+    fs.writeFile(output_dir["marks"], JSON.stringify(trackInfos.map(d=>d["spec"]["mark"])))
+    fs.writeFile(output_dir["layouts"], JSON.stringify(trackInfos.map(d=>d["spec"]["layout"])))
     await browser.close();
 }
 
@@ -73,14 +74,25 @@ async function callAPI(spec, output, output_spec, screenshot_path) {
 const OUTPUT_DIR = "../data/extracted/bounding_box/"
 const SPEC_DIR = "../data/extracted/specs/"
 const SCNS_DIR = "../data/extracted/screenshot/"
+const MARK_DIR = "../data/extracted/marks/"
+const LAYOUT_DIR = "../data/extracted/layouts/"
 
 async function runExamplePath(fp) {
     let name = path.parse(fp).name;
     let output = name + ".json";
     let output_spec = name + ".json";
     let screenshot_output = name + ".png";
+    let mark_output = name +".json";
+    let layout_output = name+"json";
+    const output_dir = {
+        "tracks": OUTPUT_DIR+output,
+        "specs":SPEC_DIR+output_spec,
+        "screenshots": SCNS_DIR+screenshot_output,
+        "marks": MARK_DIR+mark_output,
+        "layouts": LAYOUT_DIR+layout_output
+    }
     let spec = await fs.readFile(fp, "utf8");
-    await callAPI(spec, OUTPUT_DIR + output, SPEC_DIR + output_spec, SCNS_DIR + screenshot_output);
+    await callAPI(spec, output_dir);
 }
 
 let input = process.argv[2];
