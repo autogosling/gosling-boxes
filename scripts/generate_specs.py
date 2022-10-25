@@ -283,18 +283,34 @@ if __name__ == "__main__":
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     template_spec = read_spec(args.file)
+    specs = {filename:template_spec}
     if args.permute_views:
-        perm_vs = permute_views(template_spec)
+      new_specs = {}
+      for f in specs.keys():
+        s = specs[f]
+        perm_vs = permute_views(s)
         for i, pv in enumerate(perm_vs):
-            write_spec(pv, os.path.join(output_dir, filename+"_p_%d.json" % i))
+          new_specs[f+"_p_%d"%i] = pv
+      specs = new_specs
     if args.change_marker:
-        cm_vs = change_view_marker(template_spec)
+      new_specs = {}
+      for f in specs.keys():
+        s = specs[f]
+        cm_vs = change_view_marker(s)
         for i, pv in enumerate(cm_vs):
-            write_spec(pv, os.path.join(output_dir, filename+"_m_%d.json" % i))
+          new_specs[f+"_m_%d"%i] = pv
+      specs = new_specs
     if args.scale is not None:
       scales = get_scales(args.scale)
+      new_specs = {}
       for s in scales:
-        s_str = str(s).replace(".","_")
-        s_spec = scale_all_views(template_spec,s)
-        write_spec(s_spec, os.path.join(output_dir, filename+"_s_%s.json" % s_str))
+        for f in specs.keys():
+          sp = specs[f]
+          s_str = str(s).replace(".","_")
+          s_spec = scale_all_views(sp,s)
+          new_specs[f+"_s_%s"%s_str] = s_spec
+      specs = new_specs
+    
+    for f in specs.keys():
+      write_spec(specs[f], os.path.join(output_dir, f+".json"))
 
