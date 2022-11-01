@@ -8,10 +8,10 @@ def rect_to_box(bbox):
     return [bbox["x"], bbox["x"]+bbox["width"],bbox["y"],bbox["y"]+bbox["height"]]
 
 def get_ys(box):
-    return box[2],box[3]
+    return box[1][2],box[1][3]
 
 def get_xs(box):
-    return box[0],box[1]
+    return box[1][0],box[1][1]
 
 def reconstruct_vertical(boxes):
     if len(boxes) <= 1:
@@ -64,6 +64,7 @@ def reconstruct_bounding_box(bboxes):
         elif bbox.keys() == draw_bound_box.CIR_KEYS:
             boxes.append(circular_to_box(bbox))
     #print(boxes)
+    boxes = list(enumerate(boxes))
     vert_hierarchy = reconstruct_vertical(boxes)
     #print(vert_hierarchy)
     overlay_hierarchy = [reconstruct_overlay(v) for v in vert_hierarchy]
