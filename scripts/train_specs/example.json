@@ -194,6 +194,8 @@
             ]
         },
         {
+            "tracks":[
+                {
             "id": "track-4",
             "alignment": "overlay",
             "data": {
@@ -263,6 +265,8 @@
             ],
             "width": 600,
             "height": 130
+        }
+        ]
         },
         {
             "tracks": [
