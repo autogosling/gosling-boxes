@@ -48,31 +48,46 @@ def permute_views(view_spec):
 def scale_track(track, scale):
     track = copy.deepcopy(track)
     if "width" in track.keys():
-      track["width"] *= scale
+        track["width"] *= scale
     if "height" in track.keys():
-      track["height"] *= scale
+        track["height"] *= scale
     return track
 
 
+def scale_width_track(track, scale):
+    track = copy.deepcopy(track)
+    if "width" in track.keys():
+        track["width"] *= scale
+    return track
 
 
 def scale_all_views(views, scale):
     if "views" in views.keys():
-        scaled_views = [scale_all_views(v,scale) for v in views["views"]]
+        scaled_views = [scale_all_views(v, scale) for v in views["views"]]
         views = copy.deepcopy(views)
         views["views"] = scaled_views
     elif "tracks" in views.keys():
-        scaled_tracks = [scale_track(t,scale) for t in views["tracks"]]
+        scaled_tracks = [scale_track(t, scale) for t in views["tracks"]]
         views = copy.deepcopy(views)
         views["tracks"] = scaled_tracks
     return views
 
-def get_scales(scale_str):
-  res = scale_str.split(",")
-  return [float(s) for s in res]
 
-def reshape_views(views):
-    pass
+def get_scales(scale_str):
+    res = scale_str.split(";")
+    return [float(s) for s in res]
+
+
+def scale_width_views(views, scale):
+    if "views" in views.keys():
+        scaled_views = [scale_width_views(v, scale) for v in views["views"]]
+        views = copy.deepcopy(views)
+        views["views"] = scaled_views
+    elif "tracks" in views.keys():
+        scaled_tracks = [scale_width_track(t, scale) for t in views["tracks"]]
+        views = copy.deepcopy(views)
+        views["tracks"] = scaled_tracks
+    return views
 
 
 def change_track_marker(track):
@@ -268,7 +283,7 @@ test_views = """
     }
 """
 
-#print(scale_all_views(json.loads(test_views),0.8))
+# print(scale_all_views(json.loads(test_views),0.8))
 
 
 if __name__ == "__main__":
@@ -277,40 +292,50 @@ if __name__ == "__main__":
     parser.add_argument("-pv", "--permute-views", action="store_true")
     parser.add_argument("-cm", "--change-marker", action="store_true")
     parser.add_argument("-s", "--scale")
+    parser.add_argument("-sw", "--scale-width")
     args = parser.parse_args(sys.argv[1:])
     filename = os.path.splitext(os.path.basename(args.file))[0]
     output_dir = os.path.join(OUTPUT_PATH, filename)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     template_spec = read_spec(args.file)
-    specs = {filename:template_spec}
+    specs = {filename: template_spec}
     if args.permute_views:
-      new_specs = {}
-      for f in specs.keys():
-        s = specs[f]
-        perm_vs = permute_views(s)
-        for i, pv in enumerate(perm_vs):
-          new_specs[f+"_p_%d"%i] = pv
-      specs = new_specs
-    if args.change_marker:
-      new_specs = {}
-      for f in specs.keys():
-        s = specs[f]
-        cm_vs = change_view_marker(s)
-        for i, pv in enumerate(cm_vs):
-          new_specs[f+"_m_%d"%i] = pv
-      specs = new_specs
-    if args.scale is not None:
-      scales = get_scales(args.scale)
-      new_specs = {}
-      for s in scales:
+        new_specs = {}
         for f in specs.keys():
-          sp = specs[f]
-          s_str = str(s).replace(".","_")
-          s_spec = scale_all_views(sp,s)
-          new_specs[f+"_s_%s"%s_str] = s_spec
-      specs = new_specs
-    
-    for f in specs.keys():
-      write_spec(specs[f], os.path.join(output_dir, f+".json"))
+            s = specs[f]
+            perm_vs = permute_views(s)
+            for i, pv in enumerate(perm_vs):
+                new_specs[f+"_p_%d" % i] = pv
+        specs = new_specs
+    if args.change_marker:
+        new_specs = {}
+        for f in specs.keys():
+            s = specs[f]
+            cm_vs = change_view_marker(s)
+            for i, pv in enumerate(cm_vs):
+                new_specs[f+"_m_%d" % i] = pv
+        specs = new_specs
+    if args.scale_width is not None:
+        scales = get_scales(args.scale_width)
+        new_specs = {}
+        for s in scales:
+            for f in specs.keys():
+                sp = specs[f]
+                s_str = str(s).replace(".", "_")
+                s_spec = scale_width_views(sp, s)
+                new_specs[f+"_sw_%s" % s_str] = s_spec
+        specs = new_specs
+    if args.scale is not None:
+        scales = get_scales(args.scale)
+        new_specs = {}
+        for s in scales:
+            for f in specs.keys():
+                sp = specs[f]
+                s_str = str(s).replace(".", "_")
+                s_spec = scale_all_views(sp, s)
+                new_specs[f+"_s_%s" % s_str] = s_spec
+        specs = new_specs
 
+    for f in specs.keys():
+        write_spec(specs[f], os.path.join(output_dir, f+".json"))
