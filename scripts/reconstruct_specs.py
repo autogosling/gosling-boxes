@@ -13,9 +13,10 @@ def get_ys(box):
 def get_xs(box):
     return box[1][0],box[1][1]
 
+
 def reconstruct_vertical(boxes):
     if len(boxes) <= 1:
-        return boxes
+        return [boxes]
     sorted_boxes = sorted(boxes,key=get_ys)
     vert_hierarchy = []
     curr_y_low = 0
@@ -42,7 +43,7 @@ def reconstruct_overlay(vert_view):
     curr_x_low = 0
     curr_x_high = 0
     curr_view = []
-    for box in vert_view:
+    for box in sorted_boxes:
         box_x_low, box_x_high = get_xs(box)
         if box_x_low >= curr_x_high:
             overlay_hierarchy.append(curr_view)
@@ -53,7 +54,8 @@ def reconstruct_overlay(vert_view):
             curr_view.append(box)
             curr_x_high = max(curr_x_high,box_x_high)
     overlay_hierarchy.append(curr_view)
-    return overlay_hierarchy[1:]
+    overlay_hierarchy = overlay_hierarchy[1:]
+    return [reconstruct_vertical(v) for v in overlay_hierarchy]
 
 
 def reconstruct_bounding_box(bboxes):
@@ -68,8 +70,34 @@ def reconstruct_bounding_box(bboxes):
     vert_hierarchy = reconstruct_vertical(boxes)
     #print(vert_hierarchy)
     overlay_hierarchy = [reconstruct_overlay(v) for v in vert_hierarchy]
-    print(overlay_hierarchy)
     return overlay_hierarchy
 
-test_bboxes = draw_bound_box.load_boxes(BOX_DIR+"example_sim_layout_p_0_sw_1_0_s_1_0.json")
-structure = reconstruct_bounding_box(test_bboxes)
+def map_to_index(structure):
+    index_map = []
+    for i in range(len(structure)):
+        view_map = []
+        for j in range(len(structure[i])):
+            track_map = []
+            for l in range(len(structure[i][j])):
+                overlay_map = []
+                for o in range(len(structure[i][j][l])):
+                    overlay_map.append(structure[i][j][l][o][0])
+                track_map.append({
+                    "alignment": "overlay",
+                    "tracks": overlay_map})
+            view_map.append({
+                "arrangement": "vertical",
+                "views":track_map
+                })
+        index_map.append({
+            "arrangement": "serial",
+            "views": view_map})
+    return {"arrangement":"vertical",
+            "views":index_map
+    }
+
+if __name__ == "__main__":
+    test_bboxes = draw_bound_box.load_boxes(BOX_DIR+"three_composite_v.json")
+    structure = reconstruct_bounding_box(test_bboxes)
+    index_spec = map_to_index(structure)
+    print(index_spec)

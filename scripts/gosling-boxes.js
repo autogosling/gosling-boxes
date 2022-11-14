@@ -62,7 +62,7 @@ async function callAPI(spec, output_dir) {
     await canvas_elem.screenshot({ path: output_dir["screenshots"], type: "png", omitBackground: true });
 
     let trackInfos = await page.evaluate(() => tracks)
-    trackInfos = trackInfos.filter(function(d){return d["spec"]["mark"] != "header"})
+    trackInfos = trackInfos.filter(function(d){return d["spec"]["mark"] != "header" && d["spec"]["mark"]!=null})
     console.log(trackInfos)
     fs.writeFile(output_dir["tracks"], JSON.stringify(trackInfos.map(d => d['shape'])));
     fs.writeFile(output_dir["specs"], JSON.stringify(trackInfos.map(d => d['spec'])));
