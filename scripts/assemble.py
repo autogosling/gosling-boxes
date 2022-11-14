@@ -75,9 +75,9 @@ ex_track_info = {"layout":"linear",
 
 #print(assemble_views([ex_track_info]))
 
-test_files = create_filenames("basic_two_horizontal")
+test_files = create_filenames("complex_hierarchy")
 infos_structure = read_info(test_files)
-print(infos_structure)
+#print(infos_structure)
 hierarychy = reconstruct_specs.reconstruct_bounding_box(infos_structure[1])
 print(hierarychy)
 idx = reconstruct_specs.map_to_index(hierarychy)

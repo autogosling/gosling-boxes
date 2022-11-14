@@ -16,6 +16,7 @@ def get_xs(box):
 
 def reconstruct_vertical(boxes):
     if len(boxes) <= 1:
+        print("vert ", [boxes])
         return [boxes]
     sorted_boxes = sorted(boxes,key=get_ys)
     vert_hierarchy = []
@@ -33,11 +34,12 @@ def reconstruct_vertical(boxes):
             curr_layer.append(box)
             curr_y_high = max(curr_y_high,box_y_high)
     vert_hierarchy.append(curr_layer)
+    print("vert ", vert_hierarchy)
     return vert_hierarchy[1:]
 
 def reconstruct_overlay(vert_view):
     if len(vert_view) <= 1:
-        return vert_view
+        return [reconstruct_vertical(vert_view)]
     sorted_boxes = sorted(vert_view,key=get_xs)
     overlay_hierarchy = []
     curr_x_low = 0
@@ -81,9 +83,10 @@ def map_to_index(structure):
             for l in range(len(structure[i][j])):
                 overlay_map = []
                 for o in range(len(structure[i][j][l])):
+                    print(structure[i][j][l][o])
                     overlay_map.append(structure[i][j][l][o][0])
                 track_map.append({
-                    "alignment": "overlay",
+                    #"alignment": "overlay",
                     "tracks": overlay_map})
             view_map.append({
                 "arrangement": "vertical",
