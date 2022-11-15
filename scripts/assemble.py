@@ -44,6 +44,8 @@ def read_info(filenames):
         new_box = {}
         for key in infos.keys():
             if key == "box":
+                new_box["x"] = infos["box"][i]["x"]
+                new_box["y"] = infos["box"][i]["y"]
                 new_box["width"] = infos["box"][i]["width"]
                 new_box["height"] = infos["box"][i]["height"]
             else:
@@ -54,8 +56,63 @@ def read_info(filenames):
 def create_track(track_info):
     new_track = copy.deepcopy(DEFAULT_BAR_TRACK)
     for key in track_info.keys():
-        new_track[key] = track_info[key]
+        if key != "x" and key != "y":
+            new_track[key] = track_info[key]
     return new_track
+
+def get_bbox_xs(track_info):
+    return track_info["x"], track_info["x"]+track_info["width"]
+
+def get_bbox_ys(track_info):
+    return track_info["y"], track_info["y"]+track_info["height"]
+
+def construct_spec(track_infos, arrangement):
+    if len(track_infos) == 1:
+        return {
+            "tracks": [create_track(track_info) for track_info in track_infos]
+        }
+    if arrangement == "vertical":
+        new_arrangement = "horizontal"
+        y_sorted_infos = sorted(track_infos,key=get_bbox_ys)
+        all_views = []
+        curr_y_high = get_bbox_ys(y_sorted_infos[0])[1]
+        curr_view = [y_sorted_infos[0]]
+        for info in y_sorted_infos[1:]:
+            new_y_low, new_y_high = get_bbox_ys(info)
+            if new_y_low >= curr_y_high:
+                all_views.append(curr_view)
+                curr_view = [info]
+                curr_y_high =  new_y_high
+            else:
+                curr_view.append(info)
+                curr_y_high = max(curr_y_high,new_y_high)
+        all_views.append(curr_view)
+        return {
+            "arrangement":arrangement,
+            "views":[construct_spec(views,new_arrangement) for views in all_views]
+        }
+    elif arrangement == "horizontal":
+        new_arrangement = "vertical"
+        x_sorted_infos = sorted(track_infos,key=get_bbox_xs)
+        all_views = []
+        curr_x_high = get_bbox_xs(x_sorted_infos[0])[1]
+        curr_view = [x_sorted_infos[0]]
+        for info in x_sorted_infos[1:]:
+            new_x_low, new_x_high = get_bbox_xs(info)
+            if new_x_low >= curr_x_high:
+                all_views.append(curr_view)
+                curr_view = [info]
+                curr_x_high =  new_x_high
+            else:
+                curr_view.append(info)
+                curr_x_high = max(curr_x_high,new_x_high)
+        all_views.append(curr_view)
+        return {
+            "arrangement":arrangement,
+            "views":[construct_spec(views,new_arrangement) for views in all_views]
+        }
+
+
 
 
 def make_spec(track_hierarchy, track_infos):
@@ -77,12 +134,7 @@ ex_track_info = {"layout":"linear",
 
 test_files = create_filenames("complex_hierarchy")
 infos_structure = read_info(test_files)
-#print(infos_structure)
-hierarychy = reconstruct_specs.reconstruct_bounding_box(infos_structure[1])
-print(hierarychy)
-idx = reconstruct_specs.map_to_index(hierarychy)
-print(idx)
-spec = make_spec(idx,infos_structure[0])
-print(json.dumps(spec))
+res = construct_spec(infos_structure[0],"vertical")
+print(json.dumps(res))
 
 
