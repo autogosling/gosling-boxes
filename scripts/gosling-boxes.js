@@ -56,9 +56,11 @@ async function callAPI(spec, output_dir) {
 
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
-    let comp = await page.waitForSelector(".gosling-component");
+    //let comp = await page.waitForSelector(".gosling-component");
+    
 
-    let canvas_elem = await page.$("canvas")
+    let canvas_elem = await page.$("canvas");
+
     await canvas_elem.screenshot({ path: output_dir["screenshots"], type: "png", omitBackground: true });
 
     let trackInfos = await page.evaluate(() => tracks)
@@ -69,6 +71,8 @@ async function callAPI(spec, output_dir) {
     fs.writeFile(output_dir["specs"], JSON.stringify(trackInfos.map(d => d['spec'])));
     fs.writeFile(output_dir["marks"], JSON.stringify(trackInfos.map(d=>d["spec"]["mark"])))
     fs.writeFile(output_dir["layouts"], JSON.stringify(trackInfos.map(d=>d["spec"]["layout"])))
+    fs.writeFile(output_dir["orientations"], JSON.stringify(trackInfos.map(d=>d["spec"]["orientation"])))
+
     await browser.close();
 }
 
@@ -78,6 +82,7 @@ const SPEC_DIR = "../data/extracted/specs/"
 const SCNS_DIR = "../data/extracted/screenshot/"
 const MARK_DIR = "../data/extracted/marks/"
 const LAYOUT_DIR = "../data/extracted/layouts/"
+const ORIENT_DIR = "../data/extracted/orientations/"
 
 async function runExamplePath(fp) {
     let name = path.parse(fp).name;
@@ -86,12 +91,14 @@ async function runExamplePath(fp) {
     let screenshot_output = name + ".png";
     let mark_output = name +".json";
     let layout_output = name+".json";
+    let orient_output = name+".json";
     const output_dir = {
         "tracks": OUTPUT_DIR+output,
         "specs":SPEC_DIR+output_spec,
         "screenshots": SCNS_DIR+screenshot_output,
         "marks": MARK_DIR+mark_output,
-        "layouts": LAYOUT_DIR+layout_output
+        "layouts": LAYOUT_DIR+layout_output,
+        "orientations": ORIENT_DIR+orient_output
     }
     let spec = await fs.readFile(fp, "utf8");
     await callAPI(spec, output_dir);

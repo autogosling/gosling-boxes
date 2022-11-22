@@ -1,7 +1,6 @@
 import copy 
 import json
 import os
-import reconstruct_specs
 
 DEFAULT_BAR_DATA = "https://resgen.io/api/v1/tileset_info/?d=UvVPeLHuRDiYA3qwFlm7xQ"
 DEFAULT_BAR_TRACK = {
