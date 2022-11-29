@@ -72,17 +72,22 @@ async function callAPI(spec, output_dir) {
     fs.writeFile(output_dir["marks"], JSON.stringify(trackInfos.map(d=>d["spec"]["mark"])))
     fs.writeFile(output_dir["layouts"], JSON.stringify(trackInfos.map(d=>d["spec"]["layout"])))
     fs.writeFile(output_dir["orientations"], JSON.stringify(trackInfos.map(d=>d["spec"]["orientation"])))
+    fs.writeFile(output_dir["chart"], JSON.stringify(trackInfos.map(d=>{
+        if ("xe" in d["spec"] && "ye" in d["spec"]) return "heatmap";
+        else return d["spec"]["mark"];
+    })))
 
     await browser.close();
 }
 
-
-const OUTPUT_DIR = "../data/extracted/bounding_box/"
-const SPEC_DIR = "../data/extracted/specs/"
-const SCNS_DIR = "../data/extracted/screenshot/"
-const MARK_DIR = "../data/extracted/marks/"
-const LAYOUT_DIR = "../data/extracted/layouts/"
-const ORIENT_DIR = "../data/extracted/orientations/"
+const DATA_FOLDER = "../data/extracted/"
+const OUTPUT_DIR = DATA_FOLDER+"bounding_box/"
+const SPEC_DIR = DATA_FOLDER+"specs/"
+const SCNS_DIR = DATA_FOLDER+"screenshot/"
+const MARK_DIR = DATA_FOLDER+"marks/"
+const LAYOUT_DIR = DATA_FOLDER+"layouts/"
+const ORIENT_DIR = DATA_FOLDER+"orientations/"
+const CHART_DIR = DATA_FOLDER+"chart/"
 
 async function runExamplePath(fp) {
     let name = path.parse(fp).name;
@@ -92,13 +97,15 @@ async function runExamplePath(fp) {
     let mark_output = name +".json";
     let layout_output = name+".json";
     let orient_output = name+".json";
+    let chart_output = name+".json";
     const output_dir = {
         "tracks": OUTPUT_DIR+output,
         "specs":SPEC_DIR+output_spec,
         "screenshots": SCNS_DIR+screenshot_output,
         "marks": MARK_DIR+mark_output,
         "layouts": LAYOUT_DIR+layout_output,
-        "orientations": ORIENT_DIR+orient_output
+        "orientations": ORIENT_DIR+orient_output,
+        "chart": CHART_DIR+chart_output
     }
     let spec = await fs.readFile(fp, "utf8");
     await callAPI(spec, output_dir);
