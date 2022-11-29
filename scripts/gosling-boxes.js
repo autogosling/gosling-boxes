@@ -1,10 +1,8 @@
 import puppeteer from "puppeteer";
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import EventEmitter from "node:events";
+import * as fss from "node:fs";
 
-const emitter = new EventEmitter()
-emitter.setMaxListeners(100)
 
 
 /**
@@ -80,6 +78,18 @@ async function callAPI(spec, output_dir) {
     await browser.close();
 }
 
+function mkdir_if_not_exist(dir){
+    if (!fss.existsSync(dir)){
+        fss.mkdirSync(dir);
+    }
+}
+
+function mkdirs(dirs){
+    for (const dir of dirs){
+        mkdir_if_not_exist(dir);
+    }
+}
+
 const DATA_FOLDER = "../data/extracted/"
 const OUTPUT_DIR = DATA_FOLDER+"bounding_box/"
 const SPEC_DIR = DATA_FOLDER+"specs/"
@@ -88,6 +98,10 @@ const MARK_DIR = DATA_FOLDER+"marks/"
 const LAYOUT_DIR = DATA_FOLDER+"layouts/"
 const ORIENT_DIR = DATA_FOLDER+"orientations/"
 const CHART_DIR = DATA_FOLDER+"chart/"
+
+mkdir_if_not_exist(DATA_FOLDER)
+mkdirs([OUTPUT_DIR,SPEC_DIR,SCNS_DIR,MARK_DIR,LAYOUT_DIR,ORIENT_DIR,CHART_DIR])
+
 
 async function runExamplePath(fp) {
     let name = path.parse(fp).name;
