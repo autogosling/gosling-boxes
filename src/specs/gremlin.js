@@ -1,6 +1,5 @@
-import type { GoslingSpec } from 'gosling.js';
 
-export const EX_SPEC_GREMLIN: GoslingSpec = {
+export const EX_SPEC_GREMLIN = {
     title: "Gremlin (O'Brien et al. 2010)",
     style: { linkStyle: 'elliptical' },
     views: [

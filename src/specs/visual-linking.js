@@ -1,7 +1,6 @@
-import type { GoslingSpec } from '@gosling.schema';
 import { GOSLING_PUBLIC_DATA } from './gosling-data';
 
-export const EX_SPEC_LINKING: GoslingSpec = {
+export const EX_SPEC_LINKING = {
     title: 'Visual Linking',
     subtitle: 'Change the position and range of brushes to update the detail view on the bottom',
     arrangement: 'vertical',

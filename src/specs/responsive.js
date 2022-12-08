@@ -830,7 +830,7 @@ export const EX_SPEC_RESPONSIVE_IDEOGRAM = {
     ]
 };
 
-export const EX_SPEC_RESPONSIVE_COMPARATIVE_VIEWS: GoslingSpec = {
+export const EX_SPEC_RESPONSIVE_COMPARATIVE_VIEWS = {
     responsiveSize: { width: true, height: false },
     arrangement: 'horizontal',
     linkingId: '1',

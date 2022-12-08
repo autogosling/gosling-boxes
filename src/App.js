@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { GoslingComponent } from 'gosling.js';
 
+import { GoslingEditorPre } from './GoslingEditor';
+
 import * as specs from './specs';
+var fs = require('fs');
 
 
 function App() {
@@ -14,10 +17,12 @@ function App() {
 	useEffect(() => {
 		if (gosRef.current) {
 		//   gosRef.current.api.exportPng(false)
-		const canvas = gosRef.current.api.getCanvas()
 		const tracks = gosRef.current.api.getTracks()
-		console.info(tracks.map(track=>track['shape']), canvas['canvas'])
+		console.info(tracks.map(track=>track['shape']))
+		console.info(tracks.map(track=>track["spec"]["mark"]))
 		}
+		
+		
 		return ()=>{}
 	  }, [gosRef.current, key]);
 
@@ -26,10 +31,12 @@ function App() {
 			<select value={key} onChange={(k)=>setKey(k.target.value)}>
 				{keys.map(k=>(<option value={k} key={k}> {specs[k]['title'] ?? k} </option>))}
 			</select>
-			<GoslingComponent
+			{/* <GoslingComponent
 				spec={specs[key]}
 				ref = {gosRef}
-			/>
+			/> */}
+			<GoslingEditorPre
+				spec={JSON.stringify(specs[key])}/>
 		</div>
 	);
 }

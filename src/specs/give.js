@@ -1,6 +1,5 @@
-import type { GoslingSpec } from 'gosling.js';
 
-export const EX_SPEC_GIVE: GoslingSpec = {
+export const EX_SPEC_GIVE = {
     title: 'GIVE',
     subtitle: 'Reimplementation of GenoCAT examples',
     spacing: 60,
