@@ -96,15 +96,7 @@
               "domain": ["+", "-"],
               "range": ["#7585FF", "#FF8A85"]
             },
-            "visibility": [
-              {
-                "operation": "less-than",
-                "measure": "width",
-                "threshold": "|xe-x|",
-                "transitionPadding": 10,
-                "target": "mark"
-              }
-            ],
+            
             "opacity": {"value": 0.8},
             "width": 350,
             "height": 100
@@ -143,18 +135,9 @@
                 },
                 "size": {"value": 1},
                 "color": {"value": "lightgray"},
-                "stroke": {"value": "lightgray"},
-                "strokeWidth": {"value": 1},
-                "opacity": {"value": 0.3},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 100000,
-                    "operation": "LT",
-                    "transitionPadding": 100000
-                  }
-                ]
+                
+                "opacity": {"value": 0.3}
+                
               },
               {
                 "mark": "point",
@@ -173,16 +156,8 @@
                   ]
                 },
                 "size": {"value": 7},
-                "opacity": {"value": 0.8},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 1000000,
-                    "operation": "LT",
-                    "transitionPadding": 1000000
-                  }
-                ]
+                "opacity": {"value": 0.8}
+                
               },
               {
                 "data": {
@@ -228,16 +203,8 @@
                     "#5A9F8C"
                   ],
                   "legend": true
-                },
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 500000,
-                    "operation": "GT",
-                    "transitionPadding": 500000
-                  }
-                ]
+                }
+                
               }
             ],
             "color": {
@@ -362,15 +329,6 @@
               "domain": ["+", "-"],
               "range": ["#7585FF", "#FF8A85"]
             },
-            "visibility": [
-              {
-                "operation": "less-than",
-                "measure": "width",
-                "threshold": "|xe-x|",
-                "transitionPadding": 10,
-                "target": "mark"
-              }
-            ],
             "opacity": {"value": 0.8},
             "width": 350,
             "height": 100
@@ -411,16 +369,8 @@
                 "color": {"value": "lightgray"},
                 "stroke": {"value": "lightgray"},
                 "strokeWidth": {"value": 1},
-                "opacity": {"value": 0.3},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 100000,
-                    "operation": "LT",
-                    "transitionPadding": 100000
-                  }
-                ]
+                "opacity": {"value": 0.3}
+                
               },
               {
                 "mark": "point",
@@ -439,16 +389,8 @@
                   ]
                 },
                 "size": {"value": 7},
-                "opacity": {"value": 0.8},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 1000000,
-                    "operation": "LT",
-                    "transitionPadding": 1000000
-                  }
-                ]
+                "opacity": {"value": 0.8}
+                
               },
               {
                 "data": {
@@ -494,16 +436,7 @@
                     "#5A9F8C"
                   ],
                   "legend": true
-                },
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 500000,
-                    "operation": "GT",
-                    "transitionPadding": 500000
-                  }
-                ]
+                }
               }
             ],
             "color": {
@@ -628,15 +561,6 @@
               "domain": ["+", "-"],
               "range": ["#7585FF", "#FF8A85"]
             },
-            "visibility": [
-              {
-                "operation": "less-than",
-                "measure": "width",
-                "threshold": "|xe-x|",
-                "transitionPadding": 10,
-                "target": "mark"
-              }
-            ],
             "opacity": {"value": 0.8},
             "width": 350,
             "height": 100
@@ -677,16 +601,7 @@
                 "color": {"value": "lightgray"},
                 "stroke": {"value": "lightgray"},
                 "strokeWidth": {"value": 1},
-                "opacity": {"value": 0.3},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 100000,
-                    "operation": "LT",
-                    "transitionPadding": 100000
-                  }
-                ]
+                "opacity": {"value": 0.3}
               },
               {
                 "mark": "point",
@@ -705,16 +620,7 @@
                   ]
                 },
                 "size": {"value": 7},
-                "opacity": {"value": 0.8},
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 1000000,
-                    "operation": "LT",
-                    "transitionPadding": 1000000
-                  }
-                ]
+                "opacity": {"value": 0.8}
               },
               {
                 "data": {
@@ -760,16 +666,7 @@
                     "#5A9F8C"
                   ],
                   "legend": true
-                },
-                "visibility": [
-                  {
-                    "measure": "zoomLevel",
-                    "target": "mark",
-                    "threshold": 500000,
-                    "operation": "GT",
-                    "transitionPadding": 500000
-                  }
-                ]
+                }
               }
             ],
             "color": {

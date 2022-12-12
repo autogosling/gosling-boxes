@@ -4,6 +4,7 @@ from itertools import permutations, product
 from operator import le
 import os
 import copy
+import random
 
 import argparse
 import re
@@ -305,6 +306,9 @@ if __name__ == "__main__":
         for f in specs.keys():
             s = specs[f]
             perm_vs = permute_views(s)
+            if len(perm_vs)>5:
+              random.shuffle(perm_vs)
+              perm_vs = perm_vs[:5]
             for i, pv in enumerate(perm_vs):
                 new_specs[f+"_p_%d" % i] = pv
         specs = new_specs
@@ -313,6 +317,9 @@ if __name__ == "__main__":
         for f in specs.keys():
             s = specs[f]
             cm_vs = change_view_marker(s)
+            if len(cm_vs)>25:
+              random.shuffle(cm_vs)
+              cm_vs = cm_vs[:25]
             for i, pv in enumerate(cm_vs):
                 new_specs[f+"_m_%d" % i] = pv
         specs = new_specs

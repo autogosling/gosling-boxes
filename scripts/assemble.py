@@ -51,7 +51,7 @@ def read_info(filenames):
                 new_box[key] = infos[key][i]
         box_infos.append(new_box)
 
-    return box_infos, infos["box"]
+    return box_infos
 def create_track(track_info):
     new_track = copy.deepcopy(DEFAULT_BAR_TRACK)
     for key in track_info.keys():
@@ -133,7 +133,8 @@ ex_track_info = {"layout":"linear",
 
 test_files = create_filenames("complex_hierarchy")
 infos_structure = read_info(test_files)
-res = construct_spec(infos_structure[0],"vertical")
+print(infos_structure)
+res = construct_spec(infos_structure,"vertical")
 print(json.dumps(res))
 
 

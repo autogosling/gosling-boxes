@@ -39,6 +39,14 @@ function html(spec, {
 }
 
 
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+  }
+
 
 /**
  * @param {string} spec
@@ -56,23 +64,35 @@ async function callAPI(spec, output_dir) {
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     //let comp = await page.waitForSelector(".gosling-component");
     
-
+    sleep(5000)
     let canvas_elem = await page.$("canvas");
-
     await canvas_elem.screenshot({ path: output_dir["screenshots"], type: "png", omitBackground: true });
 
     let trackInfos = await page.evaluate(() => tracks)
     console.log(trackInfos)
-    trackInfos = trackInfos.filter(function(d){return d["spec"]["mark"] != "header" && d["spec"]["mark"]!=null})
-    console.log(trackInfos)
+    console.log(trackInfos.map(d=>d['spec']['overlay']))
+
+    trackInfos = trackInfos.filter(function(d){return d["spec"]["mark"] != "header" && (d["spec"]["mark"]!=null || d["spec"]["overlay"]!=null)})
     fs.writeFile(output_dir["tracks"], JSON.stringify(trackInfos.map(d => d['shape'])));
     fs.writeFile(output_dir["specs"], JSON.stringify(trackInfos.map(d => d['spec'])));
-    fs.writeFile(output_dir["marks"], JSON.stringify(trackInfos.map(d=>d["spec"]["mark"])))
+    fs.writeFile(output_dir["marks"], JSON.stringify(trackInfos.map(d=>{
+        if ("overlay" in d["spec"]) return d["spec"]["overlay"].map(o=>{
+            if (o["mark"] == null) return d["spec"]["mark"];
+            else return o["mark"];
+        }
+            );
+        else return [d["spec"]["mark"]];
+    })))
     fs.writeFile(output_dir["layouts"], JSON.stringify(trackInfos.map(d=>d["spec"]["layout"])))
     fs.writeFile(output_dir["orientations"], JSON.stringify(trackInfos.map(d=>d["spec"]["orientation"])))
     fs.writeFile(output_dir["chart"], JSON.stringify(trackInfos.map(d=>{
-        if ("xe" in d["spec"] && "ye" in d["spec"]) return "heatmap";
-        else return d["spec"]["mark"];
+        if ("overlay" in d["spec"]) return d["spec"]["overlay"].map(o=>{
+            if ("xe" in o && "ye" in o) return "heatmap";
+            else if (o["mark"] == null) return d["spec"]["mark"];
+            else return o["mark"];
+        });
+        else if ("xe" in d["spec"] && "ye" in d["spec"]) return ["heatmap"];
+        else return [d["spec"]["mark"]];
     })))
 
     await browser.close();
@@ -141,6 +161,7 @@ if (stat.isFile()) {
     var files = await (fs.readdir(input))
     console.log(files);
     for (const f of files){
+        console.log(f);
         await runExamplePath(path.join(input, f));
     }
 }
