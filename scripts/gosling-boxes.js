@@ -57,14 +57,13 @@ async function callAPI(spec, output_dir) {
 
     let browser = await puppeteer.launch({
         headless: true,
-        args: ["--use-gl=angle"], // more consistent rendering of transparent elements
+        args: ["--use-gl=egl"], // more consistent rendering of transparent elements
     });
 
     let page = await browser.newPage();
     await page.setContent(html(spec), { waitUntil: "networkidle0" });
     //let comp = await page.waitForSelector(".gosling-component");
     
-    sleep(5000)
     let canvas_elem = await page.$("canvas");
     await canvas_elem.screenshot({ path: output_dir["screenshots"], type: "png", omitBackground: true });
 
