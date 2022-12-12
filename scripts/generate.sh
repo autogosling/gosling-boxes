@@ -1,18 +1,20 @@
 #!/bin/sh
 SCALE="0.7;1.0;1.2"
 SCALEWIDTH = "0.7;1.0;1.2"
+echo python generate_specs.py -f train_specs/basic_two_horizontal_orient.json -pv -cm -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/basic_two_horizontal.json -pv -cm -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/basic_two_vertical.json -pv -cm -s $SCALE -sw $SCALEWIDTH
-echo python generate_specs.py -f train_specs/breast_cancer.json -pv -cm -s $SCALE -sw $SCALEWIDTH
-echo python generate_specs.py -f train_specs/circos.json -pv -cm -s $SCALE -sw $SCALEWIDTH
+echo python generate_specs.py -f train_specs/breast_cancer.json -cm -s $SCALE -sw $SCALEWIDTH
+echo python generate_specs.py -f train_specs/circos.json -cm -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/comp_heatmap.json -pv -s $SCALE -sw $SCALEWIDTH
-echo python generate_specs.py -f train_specs/complex_hierarchy.json -pv -s $SCALE -sw $SCALEWIDTH
+echo python generate_specs.py -f train_specs/complex_hierarchy.json -cm -s $SCALE -sw $SCALEWIDTH
+echo python generate_specs.py -f train_specs/complex_horizontal.json -cm -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/example_sim_layout.json -pv -cm -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/example.json -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/gene_annotation.json -pv -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/heatmap.json -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/hic.json -s $SCALE -sw $SCALEWIDTH
-#echo python generate_specs.py -f train_specs/lollipop.json -pv -s $SCALE -sw $SCALEWIDTH
+echo python generate_specs.py -f train_specs/lollipop_non_interactive.json -pv -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/multiple_circular.json -pv -s $SCALE -sw $SCALEWIDTH
 echo python generate_specs.py -f train_specs/multi_layer_circular.json -cm
 echo python generate_specs.py -f train_specs/multiple_view.json -pv -cm -s $SCALE -sw $SCALEWIDTH
