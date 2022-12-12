@@ -1,18 +1,10 @@
 {
   "description": "Reference: Javed et al. Graphical perception of Multiple Time Series. TVCG 2010.",
-  "responsiveSize": {"width": false, "height": true},
   "xDomain": {"chromosome": "chr12", "interval": [5000000, 15000000]},
   "views": [
     {
       "layout": "circular",
-      "responsiveSpec": [
-        {
-          "spec": {"layout": "linear"},
-          "selectivity": [
-            {"measure": "aspectRatio", "operation": "GT", "threshold": 1.5}
-          ]
-        }
-      ],
+      
       "spacing": 1,
       "tracks": [
         {
@@ -118,8 +110,8 @@
              
             }
           ],
-          "width": 600,
-          "height": 130
+          "width": 800,
+          "height": 150
         }
       ]
     }
