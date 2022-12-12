@@ -110,7 +110,7 @@ function mkdirs(dirs){
     }
 }
 
-const DATA_FOLDER = "../data/extracted/"
+const DATA_FOLDER = "/home/ec2-user/data/extracted/"
 const OUTPUT_DIR = DATA_FOLDER+"bounding_box/"
 const SPEC_DIR = DATA_FOLDER+"specs/"
 const SCNS_DIR = DATA_FOLDER+"screenshot/"

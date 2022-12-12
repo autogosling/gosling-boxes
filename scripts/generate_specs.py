@@ -12,7 +12,7 @@ import sys
 
 
 MARKERS = ["point", "line", "area", "bar"]
-OUTPUT_PATH = "generated_specs"
+OUTPUT_PATH = "/home/ec2-user/data/generated_specs"
 
 
 def read_spec(spec_file):
@@ -94,6 +94,8 @@ def scale_width_views(views, scale):
 def change_track_marker(track):
     #print("track ", track.keys())
     if "mark" not in track.keys():
+        return [track]
+    if track["mark"] == "bar" and "xe" in track.keys() and "ye" in track.keys():
         return [track]
     if track["mark"] in MARKERS:
         tracks = []
