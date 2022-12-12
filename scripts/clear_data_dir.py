@@ -2,7 +2,7 @@ from genericpath import isfile
 import os
 
 DATA_DIR = "/home/ec2-user/data/extracted"
-SPEC_DIR = "/home/ec2-user/generated_specs"
+SPEC_DIR = "/home/ec2-user/data/generated_specs"
 MAX_DEPTH = 5
 
 

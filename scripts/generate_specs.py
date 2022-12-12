@@ -294,8 +294,8 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", required=True, metavar="<filename>")
     parser.add_argument("-pv", "--permute-views", action="store_true")
     parser.add_argument("-cm", "--change-marker", action="store_true")
-    parser.add_argument("-s", "--scale")
-    parser.add_argument("-sw", "--scale-width")
+    parser.add_argument("-s", "--scale", default=None)
+    parser.add_argument("-sw", "--scale-width", default=None)
     args = parser.parse_args(sys.argv[1:])
     filename = os.path.splitext(os.path.basename(args.file))[0]
     output_dir = os.path.join(OUTPUT_PATH, filename)
