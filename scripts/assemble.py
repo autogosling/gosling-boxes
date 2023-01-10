@@ -1,30 +1,7 @@
 import copy
 import json
 import os
-
-DEFAULT_BAR_DATA = "https://resgen.io/api/v1/tileset_info/?d=UvVPeLHuRDiYA3qwFlm7xQ"
-DEFAULT_SUB_TRACK = {
-    "mark": "bar",
-}
-DEFAULT_TRACK = {
-    "width": 800,
-    "height": 180,
-    "data": {
-        "url": "https://resgen.io/api/v1/tileset_info/?d=UvVPeLHuRDiYA3qwFlm7xQ",
-        "type": "multivec",
-        "row": "sample",
-        "column": "position",
-        "value": "peak",
-        "categories": ["sample 1"],
-        "binSize": 5
-    },
-    "layout": "linear",
-    "x": {"field": "start", "type": "genomic", "axis": "bottom"},
-    "xe": {"field": "end", "type": "genomic"},
-    "y": {"field": "peak", "type": "quantitative", "axis": "right"},
-    "row": {"field": "sample", "type": "nominal"},
-    "size": {"value": 5}
-}
+import marker
 
 
 
@@ -36,7 +13,8 @@ def create_filenames(example):
     filenames = {
         "box": os.path.join(EXTRACTED_INFO_PATH, "bounding_box", example+".json"),
         "layout": os.path.join(EXTRACTED_INFO_PATH, "layouts", example+".json"),
-        "mark": os.path.join(EXTRACTED_INFO_PATH, "marks", example+".json")
+        "mark": os.path.join(EXTRACTED_INFO_PATH, "chart", example+".json"),
+        "orientation":os.path.join(EXTRACTED_INFO_PATH, "orientations", example+".json"),
     }
     return filenames
 
@@ -70,8 +48,7 @@ def read_info(filenames):
 
 
 def create_track(track_info):
-    new_track = copy.deepcopy(DEFAULT_TRACK)
-    new_sub_track = copy.deepcopy(DEFAULT_SUB_TRACK)
+    new_track = marker.get_default_track(track_info["mark"])
 
     new_track["layout"] = track_info["layout"]
     new_track["width"] = track_info["width"]
@@ -81,14 +58,15 @@ def create_track(track_info):
 
     if len(track_info["mark"]) == 1:
         new_track["alignment"] = "overlay"
-        new_sub_track["mark"] = track_info["mark"][0]
-        new_track["tracks"].append(new_sub_track)
+        new_sub_track = marker.get_default_subtrack(track_info["mark"][0])
+        if new_sub_track != None:
+            new_track["tracks"].append(new_sub_track)
     else:
         new_track["alignment"] = "overlay"
         for m in track_info["mark"]:
-            new_track_mark = copy.deepcopy(new_sub_track)
-            new_track_mark["mark"] = m
-            new_track["tracks"].append(new_track_mark)
+            new_sub_track = marker.get_default_subtrack(m)
+            if new_sub_track != None:
+                new_track["tracks"].append(new_sub_track)
     return new_track
 
 def get_height(layout,curr_height,prev_height=0):
@@ -109,7 +87,6 @@ def create_circular_stack_view(track_infos,default_center=0.3):
     prev_height = width*default_center
     for track in sorted_infos:
         new_height = track["height"]
-        print(new_height,prev_height)
         track["height"] = get_height(track["layout"],new_height,prev_height)
         track["width"] = width
         track["x"] = x
@@ -152,16 +129,10 @@ def construct_spec(track_infos, arrangement):
                 curr_view.append(info)
                 curr_y_high = max(curr_y_high, new_y_high)
         all_views.append(curr_view)
-        if len(all_views) == 1:
-            return {
-                "arrangement": arrangement,
-                "views": [create_views(all_views[0])]
-            }
-        else:
-            return {
-                "arrangement": arrangement,
-                "views": [construct_spec(views, new_arrangement) for views in all_views]
-            }
+        return {
+            "arrangement": arrangement,
+            "views": [construct_spec(views, new_arrangement) for views in all_views]
+        }
     elif arrangement == "horizontal":
         new_arrangement = "vertical"
         x_sorted_infos = sorted(track_infos, key=get_bbox_xs)
@@ -178,16 +149,16 @@ def construct_spec(track_infos, arrangement):
                 curr_view.append(info)
                 curr_x_high = max(curr_x_high, new_x_high)
         all_views.append(curr_view)
-        if len(all_views) == 1:
-            return {
-                "arrangement": arrangement,
-                "views": [create_views(all_views[0])]
-            }
-        else:
-            return {
-                "arrangement": arrangement,
-                "views": [construct_spec(views, new_arrangement) for views in all_views]
-            }
+    if len(all_views) == 1:
+        return {
+            "arrangement": arrangement,
+            "views": [create_views(all_views[0])]
+        }
+    else:
+        return {
+            "arrangement": arrangement,
+            "views": [construct_spec(views, new_arrangement) for views in all_views]
+        }
 
 
 ex_track_infos = [{
@@ -218,9 +189,9 @@ ex_stack_infos = [{
 if __name__ == "__main__":
     #print(json.dumps(create_circular_stack_view(ex_stack_infos)))
 
-    test_files = create_filenames("example_sim_layout")
+    test_files = create_filenames("heatmap")
     infos_structure = read_info(test_files)
     print(infos_structure)
     res = construct_spec(infos_structure, "vertical")
     print("----------")
-    print(json.dumps(res))
+    print(json.dumps(res, indent=4))

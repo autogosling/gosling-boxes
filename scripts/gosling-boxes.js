@@ -86,7 +86,10 @@ async function callAPI(spec, output_dir) {
     fs.writeFile(output_dir["orientations"], JSON.stringify(trackInfos.map(d=>d["spec"]["orientation"])))
     fs.writeFile(output_dir["chart"], JSON.stringify(trackInfos.map(d=>{
         if ("overlay" in d["spec"]) return d["spec"]["overlay"].map(o=>{
-            if ("xe" in o && "ye" in o) return "heatmap";
+            if (o["mark"] == "rect"){
+                if (o["y"] == null) return "heatmap";
+                else return "rect";
+            }
             else if (o["mark"] == null) return d["spec"]["mark"];
             else return o["mark"];
         });
@@ -109,7 +112,7 @@ function mkdirs(dirs){
     }
 }
 
-const DATA_FOLDER = "/home/ec2-user/data/extracted/"
+const DATA_FOLDER = "/home/ec2-user/data/extracted-1/"
 const OUTPUT_DIR = DATA_FOLDER+"bounding_box/"
 const SPEC_DIR = DATA_FOLDER+"specs/"
 const SCNS_DIR = DATA_FOLDER+"screenshot/"
