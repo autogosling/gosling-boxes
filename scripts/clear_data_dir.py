@@ -16,5 +16,5 @@ def clear_dir(directory, depth=0):
         else:
             clear_dir(fp, depth+1)
 
-clear_dir(DATA_DIR)
+#clear_dir(DATA_DIR)
 clear_dir(SPEC_DIR)

@@ -16,7 +16,7 @@ python generate_specs.py -f train_specs/heatmap.json -s $SCALE -sw $SCALEWIDTH
 python generate_specs.py -f train_specs/hic.json -s $SCALE -sw $SCALEWIDTH
 python generate_specs.py -f train_specs/lollipop_non_interactive.json -pv -s $SCALE -sw $SCALEWIDTH
 python generate_specs.py -f train_specs/multi_circular.json -pv
-python generate_specs.py -f train_specs/multi_layer_circular.json -cm
+python generate_specs.py -f train_specs/multi_layer_circular.json -cm -s $SCALE -sw $SCALEWIDTH
 python generate_specs.py -f train_specs/multiple_view.json -pv -cm -s $SCALE -sw $SCALEWIDTH
 python generate_specs.py -f train_specs/simple_circular.json -cm 
 python generate_specs.py -f train_specs/single_cell_epi.json -pv -cm -s $SCALE -sw $SCALEWIDTH

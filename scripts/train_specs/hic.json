@@ -11,7 +11,7 @@
               "url": "https://server.gosling-lang.org/api/v1/tileset_info/?d=leung2015-hg38",
               "type": "matrix"
             },
-            "mark": "bar",
+            "mark": "rect",
             "x": {"field": "xs", "type": "genomic", "axis": "top"},
             "xe": {"field": "xe", "type": "genomic", "axis": "none"},
             "y": {"field": "ys", "type": "genomic", "axis": "left"},
