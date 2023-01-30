@@ -189,7 +189,7 @@ ex_stack_infos = [{
 if __name__ == "__main__":
     #print(json.dumps(create_circular_stack_view(ex_stack_infos)))
 
-    test_files = create_filenames("heatmap")
+    test_files = create_filenames("example_sim_layout")
     infos_structure = read_info(test_files)
     print(infos_structure)
     res = construct_spec(infos_structure, "vertical")
